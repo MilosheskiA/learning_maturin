@@ -1,5 +1,7 @@
 use pyo3::prelude::*;
 
+mod data;
+
 /// Replicates the behavior of the python calc_time function
 #[pyfunction]
 fn calc_time_rust() -> PyResult<()> {
@@ -10,9 +12,24 @@ fn calc_time_rust() -> PyResult<()> {
     Ok(())
 }
 
+/// This function receives a CarDataFromPython struct and prints its contents.
+/// Args:
+///     car_info (data::CarDataFromPython): The car data received from Python.
+/// Returns:
+///     PyResult<()>: An empty result indicating successful execution.
+
+#[pyfunction]
+fn car_data(car_info: data::CarDataFromPython) -> PyResult<String> {
+    println!("{:?}", car_info);
+    let year = car_info.year;
+
+    Ok(format!("Car year is: {}", year))
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn celery_rust_calc(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(calc_time_rust, m)?)?;
+    m.add_function(wrap_pyfunction!(car_data, m)?)?;
     Ok(())
 }
